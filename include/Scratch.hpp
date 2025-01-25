@@ -11,6 +11,7 @@
 
 #define B_ON LOW
 #define B_OFF HIGH
+#define LED_PIN 2
 
 /*OLED液晶*/
 SSD1306 display(0x3c,21,22); //ディスプレイのI2Cアドレスを指定
@@ -56,21 +57,21 @@ void getColor(int r, int g, int b) {
 
 void begin_melody() {
     ledcWriteTone(2, 262);
-    delay(340);
+    delay(170);
     ledcWriteTone(2, 294);
-    delay(340);
+    delay(170);
     ledcWriteTone(2, 330);
-    delay(340);
+    delay(170);
     ledcWriteTone(2, 349);
-    delay(340);
+    delay(85);
     ledcWriteTone(2, 392);
-    delay(340);
+    delay(85);
     ledcWriteTone(2, 440);
-    delay(340);
+    delay(85);
     ledcWriteTone(2, 494);
-    delay(340);
+    delay(85);
     ledcWriteTone(2, 523);
-    delay(340);
+    delay(85);
     ledcWriteTone(2, 0);
 }
 
