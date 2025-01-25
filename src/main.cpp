@@ -155,8 +155,11 @@ void setup() {
   right_servo.write(right_servo_set); //サーボモーターの初期停止値を設定
   left_servo.write(left_servo_set); //サーボモーターの初期停止値を設定
 
+  pinMode(LED_PIN, OUTPUT); //LED用ピン
+  digitalWrite(LED_PIN, LOW); //LEDを消灯
+
   pinMode(17, INPUT_PULLUP); //スイッチ用ピン
-  ctl_flag = B_ON; //ボタン判定フラグ初期化
+  ctl_flag = B_OFF; //ボタン判定フラグ初期化
 
   pinMode(25, OUTPUT); //圧電スピーカー用ピン
   ledcSetup(2, 12000, 8); //サンプリング周波数、解像度を設定
@@ -174,7 +177,7 @@ void setup() {
 
   xTaskCreate(MainTask, "Main", 4096, NULL, 3, &Main_Task);
   xTaskCreate(DisplayTask, "Display", 4096, NULL, 3, &Display_Task);
-  //xTaskCreate(ControlTask, "Control", 4096, NULL, 3, &Control_Task);
+  xTaskCreate(ControlTask, "Control", 4096, NULL, 3, &Control_Task);
   xTaskCreate(MelodyTask, "Melody", 4096, NULL, 3, &Melody_Task);
 }
 
