@@ -6,18 +6,6 @@ void MainTask(void *pvParameters) {
     /*はじめ(ここから下の行にコードを書くよ！！！)*/
     getColor(r, g, b);
 
-    if (ctl_flag == B_ON) {
-      right_servo.write(0);
-      left_servo.write(left_servo_set);
-
-      vTaskDelay(pdMS_TO_TICKS(2000));
-
-      right_servo.write(right_servo_set);
-      left_servo.write(0);
-
-      vTaskDelay(pdMS_TO_TICKS(2000));
-    }
-
     /*おわり*/
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
@@ -128,8 +116,8 @@ void ControlTask(void *pvParameters) {
   while (1) {
     int sw = digitalRead(17);
 
-    if (sw != ctl_flag){
-      ctl_flag = sw;
+    if (sw != ceb_flag){
+      ceb_flag = sw;
     }
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
@@ -158,8 +146,8 @@ void setup() {
   pinMode(LED_PIN, OUTPUT); //LED用ピン
   digitalWrite(LED_PIN, LOW); //LEDを消灯
 
-  pinMode(17, INPUT_PULLUP); //スイッチ用ピン
-  ctl_flag = B_OFF; //ボタン判定フラグ初期化
+  pinMode(CENTER_BUTTON, INPUT_PULLUP); //センターボタン用ピン
+  ceb_flag = CEB_OFF; //ボタン判定フラグ初期化
 
   pinMode(25, OUTPUT); //圧電スピーカー用ピン
   ledcSetup(2, 12000, 8); //サンプリング周波数、解像度を設定
