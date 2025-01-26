@@ -9,9 +9,13 @@
 #include <freertos/FreeRTOS.h> //並列処理
 #include <freertos/task.h> //並列処理
 
-#define B_ON LOW
-#define B_OFF HIGH
-#define LED_PIN 2
+/*ボタン*/
+const int CENTER_BUTTON = 17;
+const int CEB_ON = 0;
+const int CEB_OFF = 1;
+
+/*LED*/
+const int LED_PIN = 2;
 
 /*OLED液晶*/
 SSD1306 display(0x3c,21,22); //ディスプレイのI2Cアドレスを指定
@@ -27,7 +31,7 @@ const int right_servo_set = 92;
 const int left_servo_set = 92;
 
 /*制御変数*/
-int ctl_flag;
+int ceb_flag;
 
 /*並列処理*/
 void DisplayTask(void *pvParameters);
