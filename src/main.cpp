@@ -1,16 +1,23 @@
 /*2025年度　新入生プログラミング体験*/
 #include "Scratch.hpp" 
 void MainTask(void *pvParameters) {
-  while (1) {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*はじめ(ここから下の行にコードを書くよ！！！)*/
-    getColor(r, g, b);
-
-    /*おわり*/
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
-  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /*はじめ(ここから下の行にコードを書くよ！！！)*/
+  set_black(35);
+  set_white(50);
+  set_pgain(1.5);
+  wait_centerbutton();
+  auto_linefollowing();
+  /*おわり*/
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  vTaskDelete(Main_Task);
 }
+
+
+
+
+
+
 
 
 
@@ -96,6 +103,7 @@ void MainTask(void *pvParameters) {
 
 void DisplayTask(void *pvParameters) {
   while (1) {
+    display_reflect(); //カラーセンサー情報表示
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
   }
@@ -105,6 +113,7 @@ void DisplayTask(void *pvParameters) {
 
 void MelodyTask(void *pvParameters) {
   while (1) {
+    run_melody(); //走行音
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
   }
@@ -114,11 +123,8 @@ void MelodyTask(void *pvParameters) {
 
 void ControlTask(void *pvParameters) {
   while (1) {
-    int sw = digitalRead(17);
-
-    if (sw != ceb_flag){
-      ceb_flag = sw;
-    }
+    getColor(); //カラーセンサー色情報取得
+    check_centerbutton(); //センターボタンチェック
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
   }
@@ -147,26 +153,19 @@ void setup() {
   digitalWrite(LED_PIN, LOW); //LEDを消灯
 
   pinMode(CENTER_BUTTON, INPUT_PULLUP); //センターボタン用ピン
-  ceb_flag = CEB_OFF; //ボタン判定フラグ初期化
 
-  pinMode(25, OUTPUT); //圧電スピーカー用ピン
+  pinMode(BUZZER_PIN, OUTPUT); //圧電スピーカー用ピン
   ledcSetup(2, 12000, 8); //サンプリング周波数、解像度を設定
-  ledcAttachPin(25, 2); //PWMチャンネル2に設定
+  ledcAttachPin(BUZZER_PIN, 2); //PWMチャンネル2に設定
 
   delay(1000); //初期化待機時間
 
   begin_melody(); //起動音
-  display.clear(); //ディスプレイ削除
-  display.display();
-  display.drawString(0,0,"ESP32");
-  display.drawString(0, 20, "Line Follower");
-  display.drawString(80, 40, "Robot");
-  display.display();
 
-  xTaskCreate(MainTask, "Main", 4096, NULL, 3, &Main_Task);
-  xTaskCreate(DisplayTask, "Display", 4096, NULL, 3, &Display_Task);
-  xTaskCreate(ControlTask, "Control", 4096, NULL, 3, &Control_Task);
-  xTaskCreate(MelodyTask, "Melody", 4096, NULL, 3, &Melody_Task);
+  xTaskCreatePinnedToCore(MainTask, "Main", 4096, NULL, 3, &Main_Task, 0);
+  xTaskCreatePinnedToCore(DisplayTask, "Display", 4096, NULL, 3, &Display_Task, 0);
+  xTaskCreatePinnedToCore(ControlTask, "Control", 4096, NULL, 3, &Control_Task, 1);
+  xTaskCreatePinnedToCore(MelodyTask, "Melody", 4096, NULL, 3, &Melody_Task, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
