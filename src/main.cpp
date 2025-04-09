@@ -3,7 +3,11 @@
 void MainTask(void *pvParameters) {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /*はじめ(ここから下の行にコードを書くよ！！！)*/
-  
+  set_black(35);
+  set_white(200);
+  set_pgain(1.25);
+  wait_startbutton();
+  auto_linefollowing();
   /*おわり*/
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   vTaskDelete(Main_Task);
@@ -98,7 +102,7 @@ void MainTask(void *pvParameters) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void DisplayTask(void *pvParameters) {
-  while (1) {
+  for(;;) {
     display_reflect(); //カラーセンサー情報表示
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
@@ -108,8 +112,8 @@ void DisplayTask(void *pvParameters) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MelodyTask(void *pvParameters) {
-  while (1) {
-    //run_melody(); //BGM
+  for (;;) {
+    run_melody(); //BGM
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
   }
@@ -118,9 +122,11 @@ void MelodyTask(void *pvParameters) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ControlTask(void *pvParameters) {
-  while (1) {
+  for (;;) {
     getColor(); //カラーセンサー色情報取得
-    check_centerbutton(); //センターボタンチェック
+    check_startbutton(); //ボタンチェック
+    check_stopbutton(); //ボタンチェック
+    reboot_stopbutton(); //停止ボタンでリセット
 
     vTaskDelay(pdMS_TO_TICKS(1)); //delay(1)
   }
@@ -148,7 +154,8 @@ void setup() {
   pinMode(LED_PIN, OUTPUT); //LED用ピン
   digitalWrite(LED_PIN, LOW); //LEDを消灯
 
-  pinMode(CENTER_BUTTON, INPUT_PULLUP); //センターボタン用ピン
+  pinMode(START_BUTTON, INPUT_PULLUP); //ボタン用ピン
+  pinMode(STOP_BUTTON, INPUT_PULLUP); //ボタン用ピン
 
   pinMode(BUZZER_PIN, OUTPUT); //圧電スピーカー用ピン
   ledcSetup(2, 12000, 8); //サンプリング周波数、解像度を設定
@@ -158,9 +165,9 @@ void setup() {
 
   begin_melody(); //起動音
 
-  xTaskCreatePinnedToCore(MainTask, "Main", 4096, NULL, 3, &Main_Task, 0);
+  xTaskCreatePinnedToCore(MainTask, "Main", 4096, NULL, 4, &Main_Task, 0);
   xTaskCreatePinnedToCore(DisplayTask, "Display", 4096, NULL, 3, &Display_Task, 0);
-  xTaskCreatePinnedToCore(ControlTask, "Control", 4096, NULL, 3, &Control_Task, 1);
+  xTaskCreatePinnedToCore(ControlTask, "Control", 4096, NULL, 4, &Control_Task, 1);
   xTaskCreatePinnedToCore(MelodyTask, "Melody", 4096, NULL, 3, &Melody_Task, 1);
 }
 
