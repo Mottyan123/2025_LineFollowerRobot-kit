@@ -4,7 +4,7 @@
 set_black(35);
 set_white(50);
 set_pgain(1.5);
-wait_centerbutton();
+wait_startbutton();
 auto_linefollowing();
 
 /*ex:複雑.ver*/
@@ -12,7 +12,7 @@ set_black(35);
 set_white(50);
 set_pgain(1.5);
 target = (double)(black+white)/2;
-wait_centerbutton();
+wait_startbutton();
 while(1){
   stearing = (int)((target-ref)*p_gain);
   start_linefollowing(stearing);
